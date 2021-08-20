@@ -44,7 +44,7 @@ const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const newSocket = io(`http://colendar.herokuapp.com`);
+    const newSocket = io(`https://colendar.herokuapp.com`);
 
     setSocket(newSocket);
 
