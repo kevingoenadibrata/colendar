@@ -82,8 +82,8 @@ const UserProvider = ({ children }) => {
         let temp = [...prev];
         for (let i = 0; i < temp.length; i++) {
           if (temp[i].index === index) {
-            temp[index].mouse.x = x;
-            temp[index].mouse.y = y;
+            temp[i].mouse.x = x;
+            temp[i].mouse.y = y;
           }
         }
         return temp;
