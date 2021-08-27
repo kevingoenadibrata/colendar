@@ -22,9 +22,7 @@ export const StyledContainer = styled.div`
   margin: 32px;
 `;
 
-export const RowContainer = styled.div`
-  display: flex;
-  justify-content: center;
+export const RowContainer = styled(BigContainer)`
   width: 100%;
 `;
 

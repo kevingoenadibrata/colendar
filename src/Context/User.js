@@ -43,6 +43,19 @@ const UserProvider = ({ children }) => {
     return { ...guests[i] };
   };
 
+  const updateMouseState = (index, x, y) => {
+    setGuests((prev) => {
+      let temp = [...prev];
+      for (let i = 0; i < temp.length; i++) {
+        if (temp[i].index === index) {
+          temp[i].mouse.x = x;
+          temp[i].mouse.y = y;
+        }
+      }
+      return temp;
+    });
+  };
+
   useEffect(() => {
     const newSocket = io(`https://colendar.herokuapp.com`);
 
@@ -78,15 +91,8 @@ const UserProvider = ({ children }) => {
     });
 
     newSocket.on("updateMouse", (index, x, y) => {
-      setGuests((prev) => {
-        let temp = [...prev];
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i].index === index) {
-            temp[i].mouse.x = x;
-            temp[i].mouse.y = y;
-          }
-        }
-        return temp;
+      window.requestAnimationFrame(() => {
+        updateMouseState(index, x, y);
       });
     });
 

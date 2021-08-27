@@ -1,5 +1,6 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRef } from "react";
 import { colorMapper } from "../../Components/colors";
 import { useUserContext } from "../../Context/User";
 import { BigContainer, MiniContainer, StyledContainer } from "./index.styles";
@@ -20,10 +21,18 @@ const NAMES = ["KG", "EL", "SH", "DH", "JJ", "AH"];
 
 const Calendar = () => {
   const { guests, moveMouse } = useUserContext();
+  const animationId = useRef(null);
 
   const handleMouseMove = (e) => {
-    moveMouse(e.clientX, e.clientY);
+    if (!animationId.current) {
+      const id = window.requestAnimationFrame(() => {
+        moveMouse(e.clientX, e.clientY);
+        animationId.current = null;
+      });
+      animationId.current = id;
+    }
   };
+
   return (
     <BigContainer onMouseMove={handleMouseMove}>
       {NAMES.map((item, index) => (
