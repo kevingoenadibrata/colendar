@@ -35,34 +35,50 @@ export const Input = styled.input`
     border-radius: 5px;
     height: 40px;
     width: 200px;
-    padding: 0 1vw;
+    outline: none;
+    text-align: center;
+    margin-right: 1vw;
 
     &:hover {
-        border: 3px solid ${(props) => props.userColor};
-        box-shadow: 4px 4px 0px 1px ${(props) => props.userColor};
+        border: 3px solid ${(props) => props.color};
+        box-shadow: 4px 4px 0px 1px ${(props) => props.color};
       }
 `;
 
 export const ButtonContainer = styled.div`
     display: flex;
     width: 50%;
-    justify-content: space-between;
+    flex-direction: column;
+    height: 33%;
 `;
 
-export const Button = styled.input`
-    width: 100px;
+export const InviteButtonContainer = styled(ButtonContainer)`
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+`;
+
+export const Button = styled.button`
+    width: 150px;
+    height: 40px;
     cursor: pointer;
     border: none;
     background-color: antiquewhite;
     border-radius: 5px;
     text-align: center;
     &:hover {
-        background-color: ${(props) => props.userColor};
+        background-color: ${(props) => props.color};
       }
 `;
 
 export const Footer = styled.div`
     width: 100%;
     height: 10%;
+`;
+
+export const ButtonWithBackground = styled(Button)`
+    background-color: ${(props) => props.color};
+    width: 100%;
 `;
 
