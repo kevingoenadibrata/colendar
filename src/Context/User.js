@@ -44,7 +44,7 @@ const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const newSocket = io(`https://colendar.herokuapp.com`);
+    const newSocket = io(`localhost:3001`);
 
     setSocket(newSocket);
 
@@ -55,17 +55,15 @@ const UserProvider = ({ children }) => {
         guests.map((item) => ({
           ...item,
           color: colorMapper[item.index],
-          mouse: { x: 0, y: 0 },
         }))
       );
-
       let user = null;
+
       guests.forEach((item) => {
         if (item.id === newSocket.id) {
           user = {
             ...item,
             color: colorMapper[item.index],
-            mouse: { x: 0, y: 0 },
           };
         }
       });
@@ -75,19 +73,6 @@ const UserProvider = ({ children }) => {
 
     newSocket.on("updateCalendar", (calendar) => {
       setCalendar(calendar);
-    });
-
-    newSocket.on("updateMouse", (index, x, y) => {
-      setGuests((prev) => {
-        let temp = [...prev];
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i].index === index) {
-            temp[i].mouse.x = x;
-            temp[i].mouse.y = y;
-          }
-        }
-        return temp;
-      });
     });
 
     return () => newSocket.close();

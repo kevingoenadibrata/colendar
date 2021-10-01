@@ -4,10 +4,9 @@ import {
   faQuestion,
   faStar,
   faTimes,
-  faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
+import React from "react";
 import { colorMapper } from "../../Components/colors";
 import { useUserContext } from "../../Context/User";
 import { CellBox, Icon, IconContainer, NumberContainer } from "./index.styles";
@@ -98,4 +97,8 @@ const Cell = ({ value }) => {
   );
 };
 
-export default Cell;
+const memoComparison = (prev, next) => {
+  return prev.value !== next.value;
+};
+
+export default React.memo(Cell, memoComparison);

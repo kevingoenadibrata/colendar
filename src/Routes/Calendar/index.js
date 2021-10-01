@@ -24,6 +24,7 @@ const Calendar = () => {
   const handleMouseMove = (e) => {
     moveMouse(e.clientX, e.clientY);
   };
+
   return (
     <BigContainer onMouseMove={handleMouseMove}>
       {NAMES.map((item, index) => (
