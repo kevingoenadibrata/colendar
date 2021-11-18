@@ -1,8 +1,10 @@
 import axios from "axios";
 
+const serverDomain = process.env.SERVER_DOMAIN || "http://localhost:3001";
+
 export const fetchNewRoom = async () => {
   try {
-    const res = await axios.post("http://localhost:3001/rooms");
+    const res = await axios.post(`${serverDomain}/rooms`);
     if (res.data.ok) {
       return res.data.roomcode;
     }
@@ -14,7 +16,7 @@ export const fetchNewRoom = async () => {
 
 export const getRoomInfo = async (id) => {
   try {
-    const res = await axios.get(`http://localhost:3001/rooms/${id}`);
+    const res = await axios.get(`${serverDomain}/rooms/${id}`);
 
     if (res.data.ok) {
       return res.data;
@@ -31,7 +33,7 @@ export const getNewToken = async (token, initials) => {
   if (initials) payload.initials = initials;
 
   try {
-    const res = await axios.post(`http://localhost:3001/token`, payload);
+    const res = await axios.post(`${serverDomain}/token`, payload);
 
     console.log(res);
 
@@ -46,7 +48,7 @@ export const getNewToken = async (token, initials) => {
 
 export const joinRoom = async (token, roomcode) => {
   try {
-    const res = await axios.post(`http://localhost:3001/join/${roomcode}`, {
+    const res = await axios.post(`${serverDomain}/join/${roomcode}`, {
       token,
     });
 
@@ -60,7 +62,7 @@ export const joinRoom = async (token, roomcode) => {
 };
 
 export const getUserInfo = async (token) => {
-  const res = await axios.post(`http://localhost:3001/user`, { token });
+  const res = await axios.post(`${serverDomain}/user`, { token });
   if (res.data.ok) return res.data;
   else return false;
 };
