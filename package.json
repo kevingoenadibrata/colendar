@@ -10,6 +10,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.22.0",
+    "dotenv": "^10.0.0",
     "evergreen-ui": "^6.4.0",
     "headless-calendar": "^1.0.0",
     "js-cookie": "^3.0.1",

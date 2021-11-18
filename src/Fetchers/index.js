@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const serverDomain = process.env.SERVER_DOMAIN || "http://localhost:3001";
+console.log(`Using Server: ${serverDomain}`);
 
 export const fetchNewRoom = async () => {
   try {
