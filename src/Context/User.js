@@ -13,18 +13,19 @@ const UserProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [socket, setSocket] = useState(null);
-  const [guests, setGuests] = useState([]);
+  const [guests, setGuests] = useState({});
   const [calendar, setCalendar] = useState({});
   const [pending, setPending] = useState(false);
 
   const setCalendarIcon = (date, icon) => {
+    console.log(date, icon);
     const tempCalendar = { ...calendar };
     if (!tempCalendar[date]) {
       tempCalendar[date] = [0, 0, 0, 0, 0, 0];
     }
-    tempCalendar[date][user.index] = icon;
+    tempCalendar[date][guests[user.id].index] = icon;
     setCalendar(tempCalendar);
-    socket.emit("setIcon", date, icon, user.index);
+    socket.emit("setIcon", date, icon, guests[user.id].index);
   };
 
   const moveMouse = (x, y) => {
@@ -56,6 +57,7 @@ const UserProvider = ({ children }) => {
           initials: guests[i].name,
           color: colorMapper[i],
           id: guests[i].id,
+          index: i,
         };
       }
       setGuests(mapGuests);

@@ -12,11 +12,13 @@ import { useUserContext } from "../../Context/User";
 import { CellBox, Icon, IconContainer, NumberContainer } from "./index.styles";
 
 const Cell = ({ value }) => {
-  const { user, setCalendarIcon, getDateData } = useUserContext();
+  const { user, guests, setCalendarIcon, getDateData } = useUserContext();
 
   const toggle = () => {
     if (value === "") return;
-    setCalendarIcon(value, (getDateData(value)[user.index] + 1) % 5);
+    const dateData = getDateData(value);
+    const index = guests[user.id].index;
+    setCalendarIcon(value, (dateData[index] + 1) % 5);
   };
 
   const getIcon = (i) => {
@@ -36,7 +38,7 @@ const Cell = ({ value }) => {
     }
   };
   return (
-    <CellBox onClick={toggle} userColor={user?.color}>
+    <CellBox onClick={toggle} userColor={guests[user.id]?.color}>
       <NumberContainer>
         <h4>{value}</h4>
       </NumberContainer>
