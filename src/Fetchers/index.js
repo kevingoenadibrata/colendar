@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const serverDomain = process.env.SERVER_DOMAIN || "http://localhost:3001";
-console.log(`Process ENV: ${process.env}`);
+console.log(process.env);
 console.log(`Server Domain: ${process.env.SERVER_DOMAIN}`);
 console.log(`Using Server: ${serverDomain}`);
 
