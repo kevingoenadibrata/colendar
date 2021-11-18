@@ -1,20 +1,27 @@
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { colorMapper } from "../../Components/colors";
+import { useEffect, useState } from "react";
 import { useUserContext } from "../../Context/User";
 import { MouseContainer, MouseInitial } from "./index.styles";
 
-const Mouse = ({ cursorInitial, index }) => {
-  const { guests, user } = useUserContext();
+const Mouse = ({ userData, index }) => {
+  const { socket, user } = useUserContext();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  if (index >= guests.length) return null;
+  useEffect(() => {
+    socket.on("updateMouse", (incomingId, x, y) => {
+      if (incomingId === userData.id) {
+        setMousePosition({ x, y });
+      }
+    });
+  }, [socket]);
 
-  if (index === user?.index) return null;
+  if (userData.id === user?.id) return null;
 
   return (
-    <MouseContainer left={guests[index].mouse.x} top={guests[index].mouse.y}>
-      <FontAwesomeIcon icon={faMousePointer} color={colorMapper[index]} />
-      <MouseInitial color={colorMapper[index]}>{cursorInitial}</MouseInitial>
+    <MouseContainer left={mousePosition.x} top={mousePosition.y}>
+      <FontAwesomeIcon icon={faMousePointer} color={userData.color} />
+      <MouseInitial color={userData.color}>{userData.initials}</MouseInitial>
     </MouseContainer>
   );
 };

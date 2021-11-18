@@ -1,29 +1,35 @@
+import axios from "axios";
+import { get, set } from "js-cookie";
 import React, { useEffect, useState, useContext } from "react";
+import { useCallback } from "react";
 import { io } from "socket.io-client";
 import { colorMapper } from "../Components/colors";
+import { getNewToken, getUserInfo, joinRoom } from "../Fetchers";
 
 const UserContext = React.createContext();
 const useUserContext = () => useContext(UserContext);
 
 const UserProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [socket, setSocket] = useState(null);
-  const [guests, setGuests] = useState([]);
+  const [guests, setGuests] = useState({});
   const [calendar, setCalendar] = useState({});
-  const [pending, setPending] = useState(true);
+  const [pending, setPending] = useState(false);
 
   const setCalendarIcon = (date, icon) => {
+    console.log(date, icon);
     const tempCalendar = { ...calendar };
     if (!tempCalendar[date]) {
       tempCalendar[date] = [0, 0, 0, 0, 0, 0];
     }
-    tempCalendar[date][user.index] = icon;
+    tempCalendar[date][guests[user.id].index] = icon;
     setCalendar(tempCalendar);
-    socket.emit("setIcon", date, icon, user.index);
+    socket.emit("setIcon", date, icon, guests[user.id].index);
   };
 
   const moveMouse = (x, y) => {
-    if (!pending) socket.emit("moveMouse", user.index, x, y);
+    if (!pending) socket.emit("moveMouse", user.id, x, y);
   };
 
   const getDateData = (date) => {
@@ -37,52 +43,24 @@ const UserProvider = ({ children }) => {
     return calendar[date];
   };
 
-  const getGuest = (i) => {
-    console.log(guests);
-    console.log(guests[i]);
-    return { ...guests[i] };
-  };
-
-  const updateMouseState = (index, x, y) => {
-    setGuests((prev) => {
-      let temp = [...prev];
-      for (let i = 0; i < temp.length; i++) {
-        if (temp[i].index === index) {
-          temp[i].mouse.x = x;
-          temp[i].mouse.y = y;
-        }
-      }
-      return temp;
-    });
-  };
-
-  useEffect(() => {
-    const newSocket = io(`https://colendar.herokuapp.com`);
+  const connectSocket = (roomcode) => {
+    const newSocket = io(process.env.SERVER_DOMAIN || `localhost:3001`);
 
     setSocket(newSocket);
 
-    newSocket.emit("hello");
+    newSocket.emit("join", roomcode);
 
     newSocket.on("getGuests", (guests) => {
-      setGuests(
-        guests.map((item) => ({
-          ...item,
-          color: colorMapper[item.index],
-          mouse: { x: 0, y: 0 },
-        }))
-      );
-
-      let user = null;
-      guests.forEach((item) => {
-        if (item.id === newSocket.id) {
-          user = {
-            ...item,
-            color: colorMapper[item.index],
-            mouse: { x: 0, y: 0 },
-          };
-        }
-      });
-      setUser(user);
+      let mapGuests = {};
+      for (let i = 0; i < guests.length; i++) {
+        mapGuests[guests[i].id] = {
+          initials: guests[i].name,
+          color: colorMapper[i],
+          id: guests[i].id,
+          index: i,
+        };
+      }
+      setGuests(mapGuests);
       setPending(false);
     });
 
@@ -90,14 +68,47 @@ const UserProvider = ({ children }) => {
       setCalendar(calendar);
     });
 
-    newSocket.on("updateMouse", (index, x, y) => {
-      window.requestAnimationFrame(() => {
-        updateMouseState(index, x, y);
-      });
-    });
-
     return () => newSocket.close();
+  };
+
+  const refreshToken = async (initials) => {
+    const res = await getNewToken(token, initials);
+    setToken(res);
+    set("token", JSON.stringify({ token: res }));
+    return res;
+  };
+
+  const requestJoinRoom = async (roomcode) => {
+    const res = await joinRoom(token, roomcode);
+    if (res) {
+      connectSocket(roomcode);
+      setUser({ ...res.user });
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const loadCookie = useCallback(async () => {
+    setPending(true);
+    try {
+      const cookieData = JSON.parse(get("token"));
+      if (!cookieData || !cookieData?.token) {
+        setToken(null);
+      } else {
+        setToken(cookieData.token);
+        const res = await getUserInfo(cookieData.token);
+        setUser(res);
+      }
+    } catch {
+      setToken(null);
+    }
+    setPending(false);
   }, []);
+
+  useEffect(() => {
+    loadCookie();
+  }, [loadCookie]);
 
   if (pending)
     return (
@@ -116,8 +127,11 @@ const UserProvider = ({ children }) => {
         getDateData,
         setCalendarIcon,
         moveMouse,
-        getGuest,
         pending,
+        refreshToken,
+        connectSocket,
+        token,
+        requestJoinRoom,
       }}
     >
       {children}
