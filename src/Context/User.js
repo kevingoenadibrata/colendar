@@ -1,16 +1,21 @@
+import axios from "axios";
+import { get, set } from "js-cookie";
 import React, { useEffect, useState, useContext } from "react";
+import { useCallback } from "react";
 import { io } from "socket.io-client";
 import { colorMapper } from "../Components/colors";
+import { getNewToken, getUserInfo, joinRoom } from "../Fetchers";
 
 const UserContext = React.createContext();
 const useUserContext = () => useContext(UserContext);
 
 const UserProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [socket, setSocket] = useState(null);
   const [guests, setGuests] = useState([]);
   const [calendar, setCalendar] = useState({});
-  const [pending, setPending] = useState(true);
+  const [pending, setPending] = useState(false);
 
   const setCalendarIcon = (date, icon) => {
     const tempCalendar = { ...calendar };
@@ -23,7 +28,7 @@ const UserProvider = ({ children }) => {
   };
 
   const moveMouse = (x, y) => {
-    if (!pending) socket.emit("moveMouse", user.index, x, y);
+    if (!pending) socket.emit("moveMouse", user.id, x, y);
   };
 
   const getDateData = (date) => {
@@ -37,37 +42,23 @@ const UserProvider = ({ children }) => {
     return calendar[date];
   };
 
-  const getGuest = (i) => {
-    console.log(guests);
-    console.log(guests[i]);
-    return { ...guests[i] };
-  };
-
-  useEffect(() => {
+  const connectSocket = (roomcode) => {
     const newSocket = io(`localhost:3001`);
 
     setSocket(newSocket);
 
-    newSocket.emit("hello");
+    newSocket.emit("join", roomcode);
 
     newSocket.on("getGuests", (guests) => {
-      setGuests(
-        guests.map((item) => ({
-          ...item,
-          color: colorMapper[item.index],
-        }))
-      );
-      let user = null;
-
-      guests.forEach((item) => {
-        if (item.id === newSocket.id) {
-          user = {
-            ...item,
-            color: colorMapper[item.index],
-          };
-        }
-      });
-      setUser(user);
+      let mapGuests = {};
+      for (let i = 0; i < guests.length; i++) {
+        mapGuests[guests[i].id] = {
+          initials: guests[i].name,
+          color: colorMapper[i],
+          id: guests[i].id,
+        };
+      }
+      setGuests(mapGuests);
       setPending(false);
     });
 
@@ -76,7 +67,46 @@ const UserProvider = ({ children }) => {
     });
 
     return () => newSocket.close();
+  };
+
+  const refreshToken = async (initials) => {
+    const res = await getNewToken(token, initials);
+    setToken(res);
+    set("token", JSON.stringify({ token: res }));
+    return res;
+  };
+
+  const requestJoinRoom = async (roomcode) => {
+    const res = await joinRoom(token, roomcode);
+    if (res) {
+      connectSocket(roomcode);
+      setUser({ ...res.user });
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const loadCookie = useCallback(async () => {
+    setPending(true);
+    try {
+      const cookieData = JSON.parse(get("token"));
+      if (!cookieData || !cookieData?.token) {
+        setToken(null);
+      } else {
+        setToken(cookieData.token);
+        const res = await getUserInfo(cookieData.token);
+        setUser(res);
+      }
+    } catch {
+      setToken(null);
+    }
+    setPending(false);
   }, []);
+
+  useEffect(() => {
+    loadCookie();
+  }, [loadCookie]);
 
   if (pending)
     return (
@@ -95,8 +125,11 @@ const UserProvider = ({ children }) => {
         getDateData,
         setCalendarIcon,
         moveMouse,
-        getGuest,
         pending,
+        refreshToken,
+        connectSocket,
+        token,
+        requestJoinRoom,
       }}
     >
       {children}

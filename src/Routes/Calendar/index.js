@@ -1,7 +1,13 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import { toaster } from "evergreen-ui";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useHistory, useParams } from "react-router";
 import { colorMapper } from "../../Components/colors";
 import { useUserContext } from "../../Context/User";
+import { joinRoom } from "../../Fetchers";
 import { BigContainer, MiniContainer, StyledContainer } from "./index.styles";
 import Mouse from "./Mouse";
 import Row from "./Row";
@@ -15,20 +21,37 @@ const TEMPLATE = [
   ["", "", "", "", "", "", ""],
 ];
 
-const HEADERS = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
-const NAMES = ["KG", "EL", "SH", "DH", "JJ", "AH"];
-
 const Calendar = () => {
-  const { guests, moveMouse } = useUserContext();
+  const { user, guests, moveMouse, requestJoinRoom } = useUserContext();
+  const { id } = useParams();
+  const [pending, setPending] = useState(true);
+  const history = useHistory();
 
   const handleMouseMove = (e) => {
-    moveMouse(e.clientX, e.clientY);
+    if (user) moveMouse(e.clientX, e.clientY);
   };
+
+  const fetchData = async () => {
+    setPending(true);
+    const res = await requestJoinRoom(id);
+    if (res) {
+      setPending(false);
+    } else {
+      toaster.danger("Error on joining room");
+      history.push(`/p/${id}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (pending) return null;
 
   return (
     <BigContainer onMouseMove={handleMouseMove}>
-      {NAMES.map((item, index) => (
-        <Mouse cursorInitial={item} index={index} />
+      {Object.values(guests).map((item, index) => (
+        <Mouse userData={item} index={item.index} key={index} />
       ))}
       <StyledContainer>
         {TEMPLATE.map((item) => (
@@ -36,12 +59,10 @@ const Calendar = () => {
         ))}
       </StyledContainer>
       <StyledContainer>
-        {guests.map((item) => (
+        {Object.values(guests).map((item) => (
           <MiniContainer>
-            <FontAwesomeIcon icon={faUser} color={colorMapper[item.index]} />
-            <h3 style={{ color: colorMapper[item.index] }}>
-              {NAMES[item.index]}
-            </h3>
+            <FontAwesomeIcon icon={faUser} color={item.color} />
+            <h3 style={{ color: item.color }}>{item.initials}</h3>
           </MiniContainer>
         ))}
       </StyledContainer>
