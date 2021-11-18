@@ -1,5 +1,7 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
+dotenv.config();
 const serverDomain = process.env.SERVER_DOMAIN || "http://localhost:3001";
 console.log(`Using Server: ${serverDomain}`);
 
