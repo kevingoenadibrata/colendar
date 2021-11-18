@@ -44,7 +44,9 @@ const UserProvider = ({ children }) => {
   };
 
   const connectSocket = (roomcode) => {
-    const newSocket = io(process.env.SERVER_DOMAIN || `localhost:3001`);
+    const newSocket = io(
+      process.env.REACT_APP_SERVER_DOMAIN || `localhost:3001`
+    );
 
     setSocket(newSocket);
 
