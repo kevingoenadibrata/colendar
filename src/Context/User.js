@@ -43,14 +43,14 @@ const UserProvider = ({ children }) => {
     return calendar[date];
   };
 
-  const connectSocket = (roomcode) => {
+  const connectSocket = (roomcode, userid) => {
     const newSocket = io(
       process.env.REACT_APP_SERVER_DOMAIN || `localhost:3001`
     );
 
     setSocket(newSocket);
 
-    newSocket.emit("join", roomcode);
+    newSocket.emit("join", roomcode, userid);
 
     newSocket.on("getGuests", (guests) => {
       let mapGuests = {};
@@ -83,7 +83,7 @@ const UserProvider = ({ children }) => {
   const requestJoinRoom = async (roomcode) => {
     const res = await joinRoom(token, roomcode);
     if (res) {
-      connectSocket(roomcode);
+      connectSocket(roomcode, res.user.id);
       setUser({ ...res.user });
       return true;
     } else {

@@ -1,13 +1,10 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import { toaster } from "evergreen-ui";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useHistory, useParams } from "react-router";
-import { colorMapper } from "../../Components/colors";
 import { useUserContext } from "../../Context/User";
-import { joinRoom } from "../../Fetchers";
 import { BigContainer, MiniContainer, StyledContainer } from "./index.styles";
 import Mouse from "./Mouse";
 import Row from "./Row";
