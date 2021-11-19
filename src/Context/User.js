@@ -18,7 +18,6 @@ const UserProvider = ({ children }) => {
   const [pending, setPending] = useState(false);
 
   const setCalendarIcon = (date, icon) => {
-    console.log(date, icon);
     const tempCalendar = { ...calendar };
     if (!tempCalendar[date]) {
       tempCalendar[date] = [0, 0, 0, 0, 0, 0];
@@ -26,6 +25,21 @@ const UserProvider = ({ children }) => {
     tempCalendar[date][guests[user.id].index] = icon;
     setCalendar(tempCalendar);
     socket.emit("setIcon", date, icon, guests[user.id].index);
+  };
+
+  const clearMarkings = () => {
+    const tempCalendar = { ...calendar };
+    for (let key in tempCalendar) {
+      tempCalendar[key][guests[user.id].index] = 0;
+    }
+
+    setCalendar(tempCalendar);
+    socket.emit("clearMarkings", guests[user.id].index);
+  };
+
+  const clearCalendar = () => {
+    setCalendar({});
+    socket.emit("clearCalendar");
   };
 
   const moveMouse = (x, y) => {
@@ -134,6 +148,8 @@ const UserProvider = ({ children }) => {
         connectSocket,
         token,
         requestJoinRoom,
+        clearMarkings,
+        clearCalendar,
       }}
     >
       {children}

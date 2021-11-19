@@ -81,3 +81,7 @@ export const MouseContainer = styled.div`
 export const MouseInitial = styled.h3`
   color: ${(props) => props.color};
 `;
+
+export const ButtonContainer = styled.div`
+  margin-top: 8px;
+`;

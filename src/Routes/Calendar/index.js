@@ -5,7 +5,13 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import { useUserContext } from "../../Context/User";
-import { BigContainer, MiniContainer, StyledContainer } from "./index.styles";
+import { Button } from "../Home/index.styles";
+import {
+  BigContainer,
+  MiniContainer,
+  StyledContainer,
+  ButtonContainer,
+} from "./index.styles";
 import Mouse from "./Mouse";
 import Row from "./Row";
 
@@ -19,7 +25,14 @@ const TEMPLATE = [
 ];
 
 const Calendar = () => {
-  const { user, guests, moveMouse, requestJoinRoom } = useUserContext();
+  const {
+    user,
+    guests,
+    moveMouse,
+    requestJoinRoom,
+    clearCalendar,
+    clearMarkings,
+  } = useUserContext();
   const { id } = useParams();
   const [pending, setPending] = useState(true);
   const history = useHistory();
@@ -62,6 +75,12 @@ const Calendar = () => {
             <h3 style={{ color: item.color }}>{item.initials}</h3>
           </MiniContainer>
         ))}
+        <ButtonContainer>
+          <Button onClick={clearMarkings}>Clear My Markings</Button>
+        </ButtonContainer>
+        <ButtonContainer>
+          <Button onClick={clearCalendar}>Clear Board</Button>
+        </ButtonContainer>
       </StyledContainer>
     </BigContainer>
   );
