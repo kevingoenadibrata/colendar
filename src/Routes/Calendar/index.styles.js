@@ -70,6 +70,7 @@ export const IconInitials = styled.h4`
 
 export const Icon = styled.div`
   visibility: ${(props) => (props.isHidden ? "hidden" : "default")};
+  opacity: ${(props) => (props.active ? "1" : "0.3")};
 `;
 
 export const MouseContainer = styled.div`

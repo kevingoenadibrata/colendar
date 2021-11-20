@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import { useUserContext } from "../../Context/User";
 import { Button } from "../Home/index.styles";
+import HoverIcons from "./HoverIcons";
 import {
   BigContainer,
   MiniContainer,
@@ -35,10 +36,19 @@ const Calendar = () => {
   } = useUserContext();
   const { id } = useParams();
   const [pending, setPending] = useState(true);
+  const [hovered, setHovered] = useState(0);
   const history = useHistory();
 
   const handleMouseMove = (e) => {
     if (user) moveMouse(e.clientX, e.clientY);
+  };
+
+  const handleMouseEnter = (i) => {
+    setHovered(i);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(0);
   };
 
   const fetchData = async () => {
@@ -65,10 +75,14 @@ const Calendar = () => {
       ))}
       <StyledContainer>
         {TEMPLATE.map((item) => (
-          <Row cells={item} />
+          <Row cells={item} hovered={hovered} />
         ))}
       </StyledContainer>
       <StyledContainer>
+        <HoverIcons
+          handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={handleMouseLeave}
+        />
         {Object.values(guests).map((item) => (
           <MiniContainer>
             <FontAwesomeIcon icon={faUser} color={item.color} />

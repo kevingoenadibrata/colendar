@@ -11,7 +11,7 @@ import { colorMapper } from "../../Components/colors";
 import { useUserContext } from "../../Context/User";
 import { CellBox, Icon, IconContainer, NumberContainer } from "./index.styles";
 
-const Cell = ({ value }) => {
+const Cell = ({ value, hovered }) => {
   const { user, guests, setCalendarIcon, getDateData } = useUserContext();
 
   const toggle = () => {
@@ -43,7 +43,10 @@ const Cell = ({ value }) => {
         <h4>{value}</h4>
       </NumberContainer>
       <IconContainer>
-        <Icon isHidden={getDateData(value)[0] === 0}>
+        <Icon
+          isHidden={getDateData(value)[0] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[0]}
+        >
           <FontAwesomeIcon
             icon={getIcon(0)}
             color={colorMapper[0]}
@@ -51,7 +54,10 @@ const Cell = ({ value }) => {
             fixedWidth
           />
         </Icon>
-        <Icon isHidden={getDateData(value)[1] === 0}>
+        <Icon
+          isHidden={getDateData(value)[1] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[1]}
+        >
           <FontAwesomeIcon
             icon={getIcon(1)}
             color={colorMapper[1]}
@@ -59,7 +65,10 @@ const Cell = ({ value }) => {
             fixedWidth
           />
         </Icon>
-        <Icon isHidden={getDateData(value)[2] === 0}>
+        <Icon
+          isHidden={getDateData(value)[2] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[2]}
+        >
           <FontAwesomeIcon
             icon={getIcon(2)}
             color={colorMapper[2]}
@@ -70,7 +79,10 @@ const Cell = ({ value }) => {
       </IconContainer>
 
       <IconContainer>
-        <Icon isHidden={getDateData(value)[3] === 0}>
+        <Icon
+          isHidden={getDateData(value)[3] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[3]}
+        >
           <FontAwesomeIcon
             icon={getIcon(3)}
             color={colorMapper[3]}
@@ -78,7 +90,10 @@ const Cell = ({ value }) => {
             fixedWidth
           />
         </Icon>
-        <Icon isHidden={getDateData(value)[4] === 0}>
+        <Icon
+          isHidden={getDateData(value)[4] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[4]}
+        >
           <FontAwesomeIcon
             icon={getIcon(4)}
             color={colorMapper[4]}
@@ -86,7 +101,10 @@ const Cell = ({ value }) => {
             fixedWidth
           />
         </Icon>
-        <Icon isHidden={getDateData(value)[5] === 0}>
+        <Icon
+          isHidden={getDateData(value)[5] === 0}
+          active={hovered === 0 || hovered === getDateData(value)[5]}
+        >
           <FontAwesomeIcon
             icon={getIcon(5)}
             color={colorMapper[5]}

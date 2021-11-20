@@ -1,11 +1,11 @@
 import Cell from "./Cell";
 import { RowContainer } from "./index.styles";
 
-const Row = ({ cells }) => {
+const Row = ({ cells, hovered }) => {
   return (
     <RowContainer>
       {cells.map((item) => (
-        <Cell value={item} />
+        <Cell hovered={hovered} value={item} />
       ))}
     </RowContainer>
   );
